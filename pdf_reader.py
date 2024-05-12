@@ -16,7 +16,7 @@ class pdfreader():
     def text_extractor(self):
         with open(self.path, 'rb') as f:
             pdf = PdfReader(f)
-            number_of_pages = pdf.getNumPages()
+            number_of_pages = len(pdf.pages)
             for i in range(0,number_of_pages,2):
                 page_num = i+1
                 print("Processing page ",page_num," ====> ")     
