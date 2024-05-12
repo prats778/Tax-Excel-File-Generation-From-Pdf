@@ -21,7 +21,7 @@ class pdfreader():
                 page_num = i+1
                 print("Processing page ",page_num," ====> ")     
                 # get the ith page
-                page = pdf.getPage(i)
+                page = pdf.pages[i]
                 text = page.extractText()
                 # print("Text: ==> ",text)
                 self.process_text_iteratively(text)
