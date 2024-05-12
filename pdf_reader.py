@@ -30,6 +30,9 @@ class pdfreader():
         self.export_data()
             
     def process_text_iteratively(self,text):
+        if "Form GSTR-3B" not in text:
+            return 
+            
         lines = text.split('\n')  # Split the text into lines
         found_tax = False
         #Extract Period
