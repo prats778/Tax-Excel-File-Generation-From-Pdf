@@ -16,13 +16,13 @@ class pdfreader():
     def text_extractor(self):
         with open(self.path, 'rb') as f:
             pdf = PdfReader(f)
-            number_of_pages = len(pdf.pages)
+            number_of_pages = pdf.getNumPages()
             for i in range(0,number_of_pages,2):
                 page_num = i+1
                 print("Processing page ",page_num," ====> ")     
                 # get the ith page
-                page = pdf.pages[i]
-                text = page.extract_text()
+                page = pdf.getPage(i)
+                text = page.extractText()
                 # print("Text: ==> ",text)
                 self.process_text_iteratively(text)
                 print(" <======= Finished processing ",page_num)
