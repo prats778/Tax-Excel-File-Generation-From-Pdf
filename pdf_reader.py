@@ -17,7 +17,7 @@ class pdfreader():
         with open(self.path, 'rb') as f:
             pdf = PdfReader(f)
             number_of_pages = pdf.getNumPages()
-            for i in range(0,number_of_pages,2):
+            for i in range(0,number_of_pages):
                 page_num = i+1
                 print("Processing page ",page_num," ====> ")     
                 # get the ith page
