@@ -4,6 +4,7 @@ from pdf_reader import pdfreader
 def app():
     st.title('PDF to Tax Excel Converter')
     gst_data = {}
+    pdf_names = {}
     # Initialize session state variables if not already present
     if 'files_ready' not in st.session_state:
         st.session_state['files_ready'] = False
@@ -15,6 +16,7 @@ def app():
 
     if convert_button and uploaded_files:
         gst_data.clear()
+        pdf_names.clear()
         st.session_state['download_files'] = []  # Reset/Clear previous files on new convert
         # Process each file
         for uploaded_file in uploaded_files:
@@ -25,14 +27,15 @@ def app():
             if p.gst_num in gst_data and p.year == gst_data[p.gst_num].year:
                 gst_data[p.gst_num].update_data(p.periods,p.tax_values)
             else:
-                gst_data[p.gst_num]=p    
+                gst_data[p.gst_num]=p
+                pdf_names[p.gst_num]=uploaded_file.name
 
         unique_gst_list = gst_data.keys()
         for gst in unique_gst_list:
             gst_data[gst].export_data()
-            st.session_state['download_files'].append((f"{gst}.xlsx", uploaded_file.name))
+            st.session_state['download_files'].append((f"{gst}.xlsx", pdf_names[gst]))
         
-        st.session_state['files_ready'] = True  # Indicate files are ready for download
+        st.session_state['files_ready'] = True 
 
     # Generate download buttons based on session state
     if st.session_state['files_ready']:
