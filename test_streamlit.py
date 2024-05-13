@@ -1,11 +1,9 @@
 import streamlit as st
 from pdf_reader import pdfreader
 
-# # Define the text extraction and processing functions here (omitted for brevity)
-
 def app():
     st.title('PDF to Tax Excel Converter')
-
+    gst_data = {}
     # Initialize session state variables if not already present
     if 'files_ready' not in st.session_state:
         st.session_state['files_ready'] = False
@@ -16,15 +14,23 @@ def app():
     convert_button = st.button('Convert')
 
     if convert_button and uploaded_files:
+        gst_data.clear()
         st.session_state['download_files'] = []  # Reset/Clear previous files on new convert
         # Process each file
         for uploaded_file in uploaded_files:
             with open(uploaded_file.name, "wb") as f:
                 f.write(uploaded_file.getbuffer())
-            # Assuming 'pdfreader' is a function you've defined elsewhere to process your PDFs
+            
             p = pdfreader(uploaded_file.name)  # Process the PDF file
-            # Store the file data and filename for download
-            st.session_state['download_files'].append((f"{p.gst_num}.xlsx", uploaded_file.name))
+            if p.gst_num in gst_data and p.year == gst_data[p.gst_num].year:
+                gst_data[p.gst_num].update_data(p.periods,p.tax_values)
+            else:
+                gst_data[p.gst_num]=p    
+
+        unique_gst_list = gst_data.keys()
+        for gst in unique_gst_list:
+            gst_data[gst].export_data()
+            st.session_state['download_files'].append((f"{gst}.xlsx", uploaded_file.name))
         
         st.session_state['files_ready'] = True  # Indicate files are ready for download
 
