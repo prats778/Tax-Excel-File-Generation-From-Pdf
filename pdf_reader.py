@@ -26,8 +26,8 @@ class pdfreader():
                 # print("Text: ==> ",text)
                 self.process_text_iteratively(text)
                 print(" <======= Finished processing ",page_num)
-        
-        self.export_data()
+        # Will be called from main loop
+        # self.export_data()
             
     def process_text_iteratively(self,text):
         if "Form GSTR-3B" not in text:
@@ -49,7 +49,17 @@ class pdfreader():
                     self.year = year
             
             # Extract GST number
+            # Case - 1 GST Field ==> 'GSTIN of the supplier'
             elif not self.gst_num and 'GSTIN of the supplier' in line:
+                print("==== found gst ===")
+                gst_number_match = re.search(r'(\w+)$', line)
+                if gst_number_match:
+                    gst_number = gst_number_match.group(1)
+                    self.gst_num = gst_number
+
+            # Case - 2 GST Field ==> 'GSTIN'
+            elif not self.gst_num and 'GSTIN' in line:
+                print("==== found gst ===")
                 gst_number_match = re.search(r'(\w+)$', line)
                 if gst_number_match:
                     gst_number = gst_number_match.group(1)
@@ -63,6 +73,15 @@ class pdfreader():
                     self.tax_values.append(total_taxable_value)
                     found_tax = True  
 
+    def update_data(self,periods_,tax_):
+        for period, tax in zip(periods_, tax_):
+            if period not in self.periods:
+                self.periods.append(period)
+                self.tax_values.append(tax)
+            else:
+                index = self.periods.index(period)
+                self.tax_values[index] = tax     
+                
     def export_data(self):
 
         # Preparing data for DataFrame
